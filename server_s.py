@@ -1,5 +1,5 @@
 import select
-from  socket import *
+from socket import *
 import sys
 import queue
 
@@ -46,8 +46,39 @@ while inputs:
             data = s.recv(1024)
             if data:
                 # A readable client socket has data
-                # print >>sys.stderr, 'received "%s" from %s' % (data, s.getpeername())
+                # print >>sys.stderr, 'received "%s" from %s' % (data, s.getpeername()) <<<<<<< switch to puthon3.4 and determine if needed
                 message_queues[s].put(data)
                 # Add output channel for response
                 if s not in outputs:
                     outputs.append(s)
+
+                else:
+                    data = s.recv(1024)
+                    if data:
+                        # A readable client socket has data
+                        #                        print output here maybe
+                        message_queues[s].put(data)
+                        # Add output channel for response
+                        if s not in outputs:
+                            outputs.append(s)
+                        else:
+                            # Interpret empty result as closed connection
+                            #                           maybe put print out here
+                            if s in outputs:
+                                outputs.remove(s)
+                            inputs.remove(s)
+                            s.close()
+
+                            #                             Remove message queue
+                            del message_queues[s]
+
+                            # handle outputs
+    for s in writable:
+        try:
+            next_msg = message_queues[s].get_nowait()
+        except queue.Empty:
+            # NO messages waiting so stop checking writeablelity
+            outputs.remove(s)
+        else:
+            # print output line maaybe
+            s.send(next_msg)
