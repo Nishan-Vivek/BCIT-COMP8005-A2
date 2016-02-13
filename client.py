@@ -23,14 +23,14 @@ try:
     message = "This is the message.  It will be repeated."
     while True:
         print_d('sending "%s"' % message, debug)
-        sock.sendall(message.encode('utf-8'))
+        sock.sendall(message.encode())
 
         amount_received = 0
         amount_expected = len(message)
-        while amount_received < amount_expected:
-            data = sock.recv(1024)
-            amount_received += len(data)
-            print_d('received "%s"' % data, debug);
+        # while amount_received < amount_expected:
+        data = sock.recv(1024).decode()
+            # amount_received += len(data)
+        print_d('received "%s"' % data, debug);
 
 finally:
     sock.close()

@@ -50,6 +50,19 @@ while inputs:
         else:
             try:
                 data = sock.recv(BUFFER_SIZE)
+                data_string = data.decode()
+                if data:
+                    print("Received: {0} ".format(data_string) + " from {0} ".format(sock.getpeername()))
+                    message_queues[sock].put(data)
+                    if sock not in outputs:
+                        outputs.append(sock)
+                else: #connection closed
+                    print_d("Closing connection with {0}".format(client_address))
+                    if sock in outputs:
+                        outputs.remove(sock)
+                    inputs.remove(sock)
+                    sock.close()
+                    del message_queues[sock]
             except Exception:
                 print_d("Closing connection to {0}".format(client_address) + " due to exception")
                 if sock in outputs:
@@ -57,28 +70,18 @@ while inputs:
                 inputs.remove(sock)
                 sock.close()
                 del message_queues[sock]
-            if data:
-                print("Received: {0} ".format(data) + " from {0} ".format(sock.getpeername()))
-                message_queues[sock].put(data)
-                if sock not in outputs:
-                    outputs.append(sock)
-            else: #connection closed
-                print_d("Closing connection with {0}".format(client_address))
-                if sock in outputs:
-                    outputs.remove(sock)
-                inputs.remove(sock)
-                sock.close()
-                del message_queues[sock]
+
 
     #Loop through ready to write sockets
     for sock in writeable:
         try:
             next_msg = message_queues[sock].get_nowait()
-        except queue.Empty:
-            outputs.remove(sock)
+        except Exception:
+            if sock in outputs:
+                outputs.remove(sock)
         else:
-            print_d("Sending {0}".format(next_msg) + " to {0}".format(sock.getpeername))
-            sock.send(next_msg)
+            print_d("Sending " + next_msg.decode() + " to {0}".format(sock.getpeername))
+            sock.sendall(next_msg)
 
     #Handle errored sockets
     for sock in exceptional:
