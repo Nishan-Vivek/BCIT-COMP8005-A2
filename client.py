@@ -20,7 +20,7 @@ sock.connect(server_address)
 
 try:
 
-    message = 'This is the message.  It will be repeated.'
+    message = "This is the message.  It will be repeated."
     while True:
         print_d('sending "%s"' % message, debug)
         sock.sendall(message.encode('utf-8'))
