@@ -2,7 +2,7 @@ import socket
 import sys
 from _thread import *
 
-DEBUG = True;
+DEBUG = False;
 
 
 def print_d(message, debug=True):
@@ -13,7 +13,7 @@ def print_d(message, debug=True):
 
 def client_thread(address):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print_d('connecting to %s port %s' % address, DEBUG)
+    print_d('connecting to %s port %s' % address)
     sock.connect(address)
     try:
         message = 'This is the message.  It will be repeated.'
@@ -35,5 +35,4 @@ if __name__ == '__main__':
     # server_address = (sys.argv[1], 10000)
     print_d('i iz rnning')
     for x in range(1, 5):
-        print_d('i iz looping')
         start_new_thread(client_thread, (server_address,))
