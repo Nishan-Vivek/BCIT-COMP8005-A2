@@ -24,7 +24,6 @@ try:
     while True:
         print_d('sending "%s"' % message, debug)
         sock.sendall(message.encode())
-
         amount_received = 0
         amount_expected = len(message)
         # while amount_received < amount_expected:

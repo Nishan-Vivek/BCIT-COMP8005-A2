@@ -11,7 +11,7 @@ def print_d(message, debug=True):
         print(message, file=sys.stderr)
 
 
-def client_handler(client_socket):
+def client_handler(client_socket, client_address):
     try:
         while True:
             data = client_socket.recv(1024)

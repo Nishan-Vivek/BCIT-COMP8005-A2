@@ -28,6 +28,9 @@ inputs = [listen_socket]
 # Sockets ready to write to
 outputs = []
 
+# List of client addresses
+client_addresses = {}
+
 # Message queues (socket:Queue)
 message_queues = {}
 
@@ -44,7 +47,7 @@ while inputs:
             print("{0} connected.".format(client_address))
             client_socket.setblocking(0)
             inputs.append(client_socket) #Add client socket to list
-
+            client_addresses[client_socket] = client_address
             message_queues[client_socket] = queue.Queue()
         # Client sockets
         else:
@@ -52,19 +55,19 @@ while inputs:
                 data = sock.recv(BUFFER_SIZE)
                 data_string = data.decode()
                 if data:
-                    print("Received: {0} ".format(data_string) + " from {0} ".format(sock.getpeername()))
+                    print("Received: {0} ".format(data_string) + " from {0} ".format(client_addresses[sock]))
                     message_queues[sock].put(data)
                     if sock not in outputs:
                         outputs.append(sock)
                 else: #connection closed
-                    print_d("Closing connection with {0}".format(client_address))
+                    print_d("Closing connection with {0}, no data".format(client_addresses[sock]))
                     if sock in outputs:
                         outputs.remove(sock)
                     inputs.remove(sock)
                     sock.close()
                     del message_queues[sock]
             except Exception:
-                print_d("Closing connection to {0}".format(client_address) + " due to exception")
+                print_d("Closing connection to {0}, exception on recv".format(client_addresses[sock]))
                 if sock in outputs:
                     outputs.remove(sock)
                 inputs.remove(sock)
@@ -80,12 +83,12 @@ while inputs:
             if sock in outputs:
                 outputs.remove(sock)
         else:
-            print_d("Sending " + next_msg.decode() + " to {0}".format(sock.getpeername))
+            print_d("Sending " + next_msg.decode() + " to {0}".format(client_addresses[sock]))
             sock.sendall(next_msg)
 
     #Handle errored sockets
     for sock in exceptional:
-        print_d("Closing connection to {0}".format(sock.getpeername()) + " due to exception")
+        print_d("Closing connection to blarg 3 {0} due to socket exception".format(client_addresses[sock]))
         inputs.remove(sock)
         if sock in outputs:
             outputs.remove(sock)
