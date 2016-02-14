@@ -49,8 +49,8 @@ listen_socket.bind(server_address)
 
 #Main loop
 while 1:
+    print_d ("Waiting for connection")
     listen_socket.listen(5)
-    # print_d ("Waiting for connection")
     client_socket, client_address = listen_socket.accept()
     newClientThread = Client_HandlerThread(client_socket, client_address)
     newClientThread.start()

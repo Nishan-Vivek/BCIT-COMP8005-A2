@@ -6,9 +6,9 @@ from math import floor, sqrt
 
 SERVER_PORT = 10000
 SERVER_ADDRESS = 'localhost'
-nb_repeat = 200
+nb_repeat = 2000
 
-def client_connection(*args):
+def client_process(*args):
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = (sys.argv[1], 10000)
@@ -34,4 +34,4 @@ def client_connection(*args):
 
 if __name__ == '__main__':
     pool = Pool(processes=nb_repeat)
-    results = pool.map(client_connection, [None for _ in range(nb_repeat)])
+    results = pool.map(client_process, [None for _ in range(nb_repeat)])
