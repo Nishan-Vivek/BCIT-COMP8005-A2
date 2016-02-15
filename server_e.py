@@ -3,7 +3,7 @@ from socket import *
 import sys
 import queue
 import signal
-import time
+import csv
 
 DEBUG = False
 LISTEN_PORT = 10000
@@ -21,6 +21,10 @@ def exit_gracefully(signum, frame):
 
     try:
         if input("\nReally quit? (y/n)> ").lower().startswith('y'):
+            write_stats(client_id_counter, client_data_counter)
+
+
+
             sys.exit(1)
 
     except KeyboardInterrupt:
@@ -54,8 +58,11 @@ def run_program():
                         data_string = data.decode()
                         if data:
                             print_d("Received: {0} ".format(data_string) + " from {0} ".format(client_addresses[fileno]), DEBUG)
+                            client_id = ("{0}".format(client_addresses[fileno]))
                             message_queues[fileno].put(data)
                             epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
+                            client_id_counter.append(client_id)
+                            client_data_counter.append(sys.getsizeof(data_string))
                         else: #close connection
                             print_d("Closing connection with {0}, no data".format(client_addresses[fileno]))
                             epoll.unregister(fileno)
@@ -108,8 +115,30 @@ def run_program():
 class ClientStats():
     def __init__(self):
         self.client_id = 0
-        self.req_c = 0
         self.data_sent = 0
+        self.req_c = 0
+
+def write_stats(client_id_counter, client_data_counter):
+    server_statistics = {}
+
+    for i, client_id in enumerate(client_id_counter):
+        if client_id not in server_statistics:
+            server_statistics[client_id] = ClientStats()
+            server_statistics[client_id].client_id = client_id
+            server_statistics[client_id].req_c += 1
+            server_statistics[client_id].data_sent += client_data_counter[i]
+        else:
+            server_statistics[client_id].req_c += 1
+            server_statistics[client_id].data_sent += client_data_counter[i]
+
+    print_d("Writing stats to server_e_Stats.csv")
+    with open('server_e_Stats.csv', 'w', newline='') as csvfile:
+        filewriter = csv.writer(csvfile, dialect='excel')
+        filewriter.writerow(["ClientID", "Completed Connections", "Data Received"])
+        for x in server_statistics:
+            filewriter.writerow([server_statistics[x].client_id, server_statistics[x].req_c, server_statistics[x].data_sent])
+
+
 
 
 # Setup Listening Socket
@@ -123,6 +152,9 @@ listen_socket.listen(5)
 message_queues = {}
 client_addresses = {}
 client_sockets = {}
+client_id_counter = []
+client_data_counter = []
+
 
 # create epoll object and register listing socket
 epoll = select.epoll()
