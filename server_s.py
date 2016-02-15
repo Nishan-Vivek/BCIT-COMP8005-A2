@@ -25,8 +25,6 @@ def exit_gracefully(signum, frame):
         if input("\nReally quit? (y/n)> ").lower().startswith('y'):
             write_stats(client_id_counter, client_data_counter)
 
-
-
             sys.exit(1)
 
     except KeyboardInterrupt:
@@ -36,11 +34,13 @@ def exit_gracefully(signum, frame):
     # restore the exit gracefully handler here
     signal.signal(signal.SIGINT, exit_gracefully)
 
+
 class ClientStats():
     def __init__(self):
         self.client_id = 0
         self.data_sent = 0
         self.req_c = 0
+
 
 def write_stats(client_id_counter, client_data_counter):
     server_statistics = {}
@@ -60,23 +60,24 @@ def write_stats(client_id_counter, client_data_counter):
         filewriter = csv.writer(csvfile, dialect='excel')
         filewriter.writerow(["ClientID", "Completed Connections", "Data Received"])
         for x in server_statistics:
-            filewriter.writerow([server_statistics[x].client_id, server_statistics[x].req_c, server_statistics[x].data_sent])
+            filewriter.writerow(
+                [server_statistics[x].client_id, server_statistics[x].req_c, server_statistics[x].data_sent])
 
 
 def run_program():
     # Main loop through sockets with select
     while inputs:
-        print_d ("Waiting for available socket", DEBUG)
+        print_d("Waiting for available socket", DEBUG)
         readable, writeable, exceptional = select.select(inputs, outputs, inputs)
 
-        #Loop through ready to read sockets
+        # Loop through ready to read sockets
         for sock in readable:
             # Main listening socket
             if sock is listen_socket:
                 client_socket, client_address = sock.accept()
                 print_d("{0} connected.".format(client_address))
                 client_socket.setblocking(0)
-                inputs.append(client_socket) #Add client socket to list
+                inputs.append(client_socket)  # Add client socket to list
                 client_addresses[client_socket] = client_address
                 message_queues[client_socket] = queue.Queue()
             # Client sockets
@@ -85,14 +86,15 @@ def run_program():
                     data = sock.recv(BUFFER_SIZE)
                     data_string = data.decode()
                     if data:
-                        print_d("Received: {0} ".format(data_string) + " from {0} ".format(client_addresses[sock]), DEBUG)
+                        print_d("Received: {0} ".format(data_string) + " from {0} ".format(client_addresses[sock]),
+                                DEBUG)
                         message_queues[sock].put(data)
                         client_id = ("{0}".format(client_addresses[sock]))
                         client_id_counter.append(client_id)
                         client_data_counter.append(sys.getsizeof(data_string))
                         if sock not in outputs:
                             outputs.append(sock)
-                    else: #connection closed
+                    else:  # connection closed
                         print_d("Closing connection with {0}, no data".format(client_addresses[sock]))
                         if sock in outputs:
                             outputs.remove(sock)
@@ -107,8 +109,7 @@ def run_program():
                     sock.close()
                     del message_queues[sock]
 
-
-        #Loop through ready to write sockets
+        # Loop through ready to write sockets
         for sock in writeable:
             try:
                 next_msg = message_queues[sock].get_nowait()
@@ -119,7 +120,7 @@ def run_program():
                 print_d("Sending " + next_msg.decode() + " to {0}".format(client_addresses[sock]), DEBUG)
                 sock.sendall(next_msg)
 
-        #Handle errored sockets
+        # Handle errored sockets
         for sock in exceptional:
             print_d("Closing connection to {0} due to socket exception".format(client_addresses[sock]))
             inputs.remove(sock)
@@ -127,7 +128,6 @@ def run_program():
                 outputs.remove(sock)
             sock.close()
             del message_queues[sock]
-
 
 
 # Setup Listening Socket
@@ -156,19 +156,3 @@ if __name__ == '__main__':
     original_sigint = signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGINT, exit_gracefully)
     run_program()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
