@@ -1,16 +1,17 @@
 import socket
 import sys
-from multiprocessing import Pool
+from multiprocessing import Pool, Process
 import threading
 import os
 
 DEBUG = False
 SERVER_PORT = 10000
 SERVER_ADDRESS = 'localhost'
-PROC_NUM = 6
-THREAD_PER_PROC = 1000
-REPEAT = 100
-SOCKET_TIMEOUT = 0
+PROC_NUM = 1000
+THREAD_PER_PROC = 1
+REPEAT = 1000
+SOCKET_TIMEOUT = 10
+PAYLOAD = "This is the payload"
 
 
 def print_d(message, debug=True):
@@ -41,17 +42,21 @@ class ClientThread(threading.Thread):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if SOCKET_TIMEOUT != 0:
                 sock.settimeout(SOCKET_TIMEOUT)
+
             print_d("PID:{0}".format(
                 os.getpid()) + "-" + threading.current_thread().getName() + ' connecting to %s port %s ' % self.server_address)
-            # print_d('connecting to %s port %s ' % self.server_address + "with PID:{0}".format(os.getpid()) + "-" + threading.current_thread().getName())
             sock.connect(self.server_address)
-            message = "This is the message.  It will be repeated."
+            message = PAYLOAD
+
+            #Send the payload the REPEAT number of times or indefitealy if REPEAT = 0
             if REPEAT == 0:
                 while 1:
                     messaging(sock, message)
             else:
                 for x in range(REPEAT):
                     messaging(sock, message)
+
+        #close sockets on exceptions and completion
         except Exception as e:
             print_d(
                 "PID:{0}".format(os.getpid()) + "-" + threading.current_thread().getName() + " encountered " + repr(e))
@@ -77,4 +82,7 @@ def client_process(*args):
 
 if __name__ == '__main__':
     pool = Pool(processes=PROC_NUM)
-    results = pool.map(client_process, [None for _ in range(PROC_NUM)])
+    results = pool.map(client_process, range(PROC_NUM))
+    pool.close()
+    pool.join()
+    print_d("All processes ended")

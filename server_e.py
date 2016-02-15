@@ -7,7 +7,6 @@ DEBUG = False
 LISTEN_PORT = 10000
 BUFFER_SIZE = 1024
 
-
 def print_d(message, debug=True):
     """Prints message if debug is true."""
     if debug:
