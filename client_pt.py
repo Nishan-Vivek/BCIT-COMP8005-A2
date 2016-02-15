@@ -1,19 +1,18 @@
 import socket
 import sys
-from multiprocessing import Pool, Process
+from multiprocessing import Pool
 import threading
 import os
 import time
 import csv
-import datetime
 
-DEBUG = True
+DEBUG = False
 SERVER_PORT = 10000
 SERVER_ADDRESS = 'localhost'
-PROC_NUM = 10
-THREAD_PER_PROC = 10
-REPEAT = 10
-SOCKET_TIMEOUT = 10
+PROC_NUM = 1000
+THREAD_PER_PROC = 1
+REPEAT = 100
+SOCKET_TIMEOUT = 0
 PAYLOAD = "This is the payloadd"
 
 
@@ -44,15 +43,15 @@ def messaging2(sock, message):
                 print_d('received "%s"' % data, DEBUG)
     except Exception as e:
         print_d(e)
-        endtime = time.time()
-        totalTime = endtime - starttime
-        if stats.req_c != 0:
-            stats.avg_rtt = totalTime / stats.req_c
-        return stats
+        # endtime = time.time()
+        # totalTime = endtime - starttime
+        # if stats.req_c != 0:
+        #     stats.avg_rtt = totalTime / stats.req_c
+        # return stats
     finally:
         endtime = time.time()
         totalTime = endtime - starttime
-        if stats.req_c != None:
+        if stats.req_c != 0:
             stats.avg_rtt = totalTime / stats.req_c
         return stats
 
