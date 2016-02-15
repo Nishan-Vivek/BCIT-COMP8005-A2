@@ -3,7 +3,7 @@ from socket import *
 import sys
 import queue
 
-DEBUG = False
+DEBUG = True
 LISTEN_PORT = 10000
 BUFFER_SIZE = 1024
 
