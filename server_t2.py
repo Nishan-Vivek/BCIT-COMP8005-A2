@@ -2,7 +2,7 @@ from socket import *
 import threading
 import sys
 
-DEBUG = True
+DEBUG = False
 LISTEN_PORT = 10000
 BUFFER_SIZE = 1024
 
@@ -27,7 +27,7 @@ class Client_HandlerThread(threading.Thread):
                 data = self.client_socket.recv(BUFFER_SIZE)
                 data_string = data.decode()
                 if data:
-                    print("Received: {0} ".format(data_string) + " from {0} ".format(self.client_address))
+                    print_d("Received: {0} ".format(data_string) + " from {0} ".format(self.client_address), DEBUG)
                     self.client_socket.sendall(data)
                 else: #connection closed
                     print_d("Closing connection with {0}, no data".format(self.client_address))

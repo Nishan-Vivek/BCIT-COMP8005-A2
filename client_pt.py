@@ -9,11 +9,11 @@ import csv
 DEBUG = False
 SERVER_PORT = 10000
 SERVER_ADDRESS = 'localhost'
-PROC_NUM = 1000
-THREAD_PER_PROC = 1
-REPEAT = 100
+PROC_NUM = 5
+THREAD_PER_PROC = 10
+REPEAT = 1
 SOCKET_TIMEOUT = 0
-PAYLOAD = "This is the payloadd"
+PAYLOAD = "This is the payload"
 
 
 def print_d(message, debug=True):
