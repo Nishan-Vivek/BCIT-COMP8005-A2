@@ -10,11 +10,11 @@ import datetime
 DEBUG = True
 SERVER_PORT = 10000
 SERVER_ADDRESS = 'localhost'
-PROC_NUM = 1
-THREAD_PER_PROC = 1
+PROC_NUM = 10
+THREAD_PER_PROC = 10
 REPEAT = 10
 SOCKET_TIMEOUT = 10
-PAYLOAD = "This is the payload"
+PAYLOAD = "This is the payloadd"
 
 
 def print_d(message, debug=True):
@@ -31,7 +31,7 @@ def messaging2(sock, message):
     stats = ClientStats()
     stats.client_id = getClientID()
     stats.req_w = REPEAT
-    stats.req_c += 1
+    stats.req_c += 0
     try:
         starttime = time.time()
         for x in range(REPEAT):
@@ -40,15 +40,15 @@ def messaging2(sock, message):
             data = sock.recv(1024).decode()
             if data:
                 stats.req_c += 1
-                stats.data_transferred += sys.getsizeof(data).to_bytes()
+                stats.data_sent += sys.getsizeof(message)
                 print_d('received "%s"' % data, DEBUG)
-    except:
+    except Exception as e:
+        print_d(e)
         endtime = time.time()
         totalTime = endtime - starttime
         if stats.req_c != 0:
             stats.avg_rtt = totalTime / stats.req_c
         return stats
-        raise
     finally:
         endtime = time.time()
         totalTime = endtime - starttime
@@ -95,12 +95,7 @@ class ClientThread(threading.Thread):
             message = PAYLOAD
 
             # Send the payload the REPEAT number of times or indefitealy if REPEAT = 0
-            if REPEAT == 0:
-                while 1:
-                    messaging(sock, message)
-            else:
-                for x in range(REPEAT):
-                    self.statistics[getClientID()] = messaging2(sock, message)
+            self.statistics[getClientID()] = messaging2(sock, message)
 
         # close sockets on exceptions and completion
         except Exception as e:
