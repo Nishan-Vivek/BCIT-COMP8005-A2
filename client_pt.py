@@ -20,6 +20,33 @@ def print_d(message, debug=True):
         print(message, file=sys.stderr)
 
 
+def getClientID():
+    return "PID:{0}".format(os.getpid()) + "-" + threading.current_thread().getName()
+
+def messaging2(sock, message):
+    stats = ClientStats()
+    stats.client_id = getClientID()
+    stats.req_w = REPEAT
+    stats.req_c = 0
+    stats.data_transferred = 0
+
+    try:
+
+        for x in range(REPEAT):
+            print_d('sending "%s"' % message, DEBUG)
+            sock.sendall(message.encode())
+            data = sock.recv(1024).decode()
+            if data:
+                stats.req_c +=1
+                stats.data_transferred += sys.getsizeof(data)
+                print_d('received "%s"' % data, DEBUG)
+    except:
+        return stats
+        raise
+    finally:
+        return stats
+
+
 def messaging(sock, message):
     try:
         print_d('sending "%s"' % message, DEBUG)
@@ -28,6 +55,14 @@ def messaging(sock, message):
         print_d('received "%s"' % data, DEBUG);
     except:
         raise
+
+class ClientStats():
+    def __init__(self, client_id, req_c, req_w, avg_rtt, data_sent):
+        self.client_id = client_id
+        self.req_c = req_c
+        self.req_w = req_w
+        self.data_sent = data_sent
+        self.avg_rtt = avg_rtt
 
 
 class ClientThread(threading.Thread):
