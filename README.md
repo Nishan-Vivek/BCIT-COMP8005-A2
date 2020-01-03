@@ -39,7 +39,7 @@ back to the clients.
 
 # Application Design 
 
-*Language: Python*
+*Language: Python 2.7*
 
 *Environment: Linux*
 
@@ -50,25 +50,25 @@ back to the clients.
 The multi-threaded server follows a basic design. The main processes
 listen on the server socket for incoming connections.
 
-![](/media/image1.tiff)
+![](/media/image1.png)
 
 On receiving the connection, a client socket is created and passed to a
 spawned thread for handling. The client handling thread then performs
 the echo with the client until the client terminates the connection or
 an error has occurred.
 
-![](media/image2.tiff)
+![](media/image2.png)
 
 It then closes the connection and publishes its recorded connection
 statistics back to the main process by use of a write\_stats function.
 
-![](media/image3.tiff)
+![](media/image3.png)
 
 The main processes will run indefinitely until the user terminates the
 program with Ctrl-C. It then gathers and writes the recorded connection
 statistics to a csv file.
 
-![](media/image4.tiff)
+![](media/image4.png)
 
 #### 
 
@@ -84,16 +84,16 @@ sockets are ready for reading, writing or have an error detected they
 are put into corresponding socket lists/sets. The main loop then goes
 through the lists reading from the read list
 
-![](media/image5.tiff)
+![](media/image5.png)
 
 and writing to the sockets in the write list.
 
-![](media/image6.tiff)
+![](media/image6.png)
 
 If the socket is in the error/exception list, the socket is closed and
 removed from the main socket list.
 
-![](media/image7.tiff)
+![](media/image7.png)
 
 Statistics are gathered on socket reads and are complied and written to
 disk on server termination.
@@ -105,7 +105,7 @@ epoll() function in edge-triggered mode. On before the main loop the
 server socket is registered with the epoll object to trigger events on
 EPOLLIN (ready to read).
 
-![](media/image8.tiff)
+![](media/image8.png)
 
 The main loop is then started. When epoll() detects the server socket
 has received a connection its FD is added to the event list. The main
@@ -113,14 +113,14 @@ loop then checks all the events that have the EPOLLIN flag set, if it is
 the server socket is knows a client connection was made and creates a
 new client socket. This client socket is then registered with EPOLLIN.
 
-![](media/image9.tiff)
+![](media/image9.png)
 
 The loop processes EPOLLIN events and EPOLLOUT events in that order.
 When a client connection is ready to read its messaged is stored and the
 socket then registered with EPOLLOUT. When the EPOLLOUT section of the
 loop is reached the message is echoed back to the client.
 
-![](media/image10.tiff)
+![](media/image10.png)
 
 Both sections of the loop handle will also close and unregister the
 socket when appropriate. Upon program termination the connection
@@ -130,31 +130,31 @@ statistics are compiled and written to a csv file.
 
 #### Server\_e.py (Epoll Server)
 
-![](media/image11.tiff)
+![](media/image11.png)
 
 #### Server\_t.py (Multi-Threaded Server)
 
-![](media/image12.tiff)
+![](media/image12.png)
 
 #### Server\_s.py (Select Server)
 
-![](media/image13.tiff)
+![](media/image13.png)
 
 ## Diagrams
 
 #### Epoll Server Diagram
 
-![](media/image14.tiff)
+![](media/image14.png)
 
 #### Multi-Threaded Server Diagram
 
-![](media/image15.tiff)
+![](media/image15.png)
 
 #### 
 
 #### Select Server Diagram
 
-![](media/image16.tiff)
+![](media/image16.png)
 
 # Testing & Results
 
@@ -205,7 +205,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-<span class="chart">\[CHART\]</span>
+![alt](/media/chart1.png)
 
 ## Test Case \#2
 
@@ -219,7 +219,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-<span class="chart">\[CHART\]</span>
+![alt](/media/chart2.png)
 
 ## 
 
@@ -235,7 +235,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-<span class="chart">\[CHART\]</span>
+![alt](/media/chart3.png)
 
 ## Test Case \#4
 
@@ -249,7 +249,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-<span class="chart">\[CHART\]</span>
+![alt](/media/chart4.png)
 
 ## Test Case \#5
 
@@ -263,7 +263,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-<span class="chart">\[CHART\]</span>
+![alt](/media/chart5.png)
 
 ## 
 
@@ -284,4 +284,4 @@ Parameters:
 
   - Message: “This is the payload”
 
-<span class="chart">\[CHART\]</span>
+![alt](/media/chart6.png)
