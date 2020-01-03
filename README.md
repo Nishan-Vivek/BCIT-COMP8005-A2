@@ -205,7 +205,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-![](media/chart1.png)
+![](media/chart1.PNG)
 
 ## Test Case \#2
 
@@ -219,7 +219,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-![](media/chart2.png)
+![](media/chart2.PNG)
 
 ## 
 
@@ -235,7 +235,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-![](media/chart3.png)
+![](media/chart3.PNG)
 
 ## Test Case \#4
 
@@ -249,7 +249,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-![](media/chart4.png)
+![](media/chart4.PNG)
 
 ## Test Case \#5
 
@@ -263,7 +263,7 @@ Parameters:
 
   - Message: “This is the payload”
 
-![](media/chart5.png)
+![](media/chart5.PNG)
 
 ## 
 
@@ -284,4 +284,4 @@ Parameters:
 
   - Message: “This is the payload”
 
-![](media/chart6.png)
+![](media/chart6.PNG)
